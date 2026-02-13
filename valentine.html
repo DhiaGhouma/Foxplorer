@@ -1,0 +1,821 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>A Special Question 💝</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: 'Georgia', 'Palatino', serif;
+            overflow: hidden;
+            height: 100vh;
+            background: linear-gradient(135deg, #ffeef8 0%, #ffe0f0 50%, #ffd4e8 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        /* Smooth background animation */
+        @keyframes gradientShift {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #ffeef8, #ffe0f0, #ffd4e8, #ffb6d9, #ffd4e8, #ffe0f0, #ffeef8);
+            background-size: 400% 400%;
+            animation: gradientShift 15s ease infinite;
+            z-index: -1;
+        }
+
+        /* Enhanced floating hearts */
+        .hearts-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+            opacity: 1;
+            transition: opacity 1.5s ease-out;
+        }
+
+        .hearts-container.fade-out {
+            opacity: 0;
+        }
+
+        .heart {
+            position: absolute;
+            width: 50px;
+            height: 50px;
+            opacity: 0;
+            filter: drop-shadow(0 0 10px rgba(255, 107, 157, 0.6));
+            animation: floatUp 5s ease-in-out infinite;
+        }
+
+        .heart::before,
+        .heart::after {
+            content: "";
+            position: absolute;
+            width: 25px;
+            height: 40px;
+            background: linear-gradient(135deg, #ff6b9d 0%, #ff8fb3 100%);
+            border-radius: 25px 25px 0 0;
+        }
+
+        .heart::before {
+            left: 25px;
+            transform: rotate(-45deg);
+            transform-origin: 0 100%;
+        }
+
+        .heart::after {
+            left: 0;
+            transform: rotate(45deg);
+            transform-origin: 100% 100%;
+        }
+
+        @keyframes floatUp {
+            0% {
+                transform: translateY(100vh) translateX(0) rotate(0deg) scale(0.3);
+                opacity: 0;
+            }
+            15% {
+                opacity: 0.9;
+            }
+            85% {
+                opacity: 0.9;
+            }
+            100% {
+                transform: translateY(-120px) translateX(30px) rotate(180deg) scale(1);
+                opacity: 0;
+            }
+        }
+
+        /* Main content */
+        .content {
+            text-align: center;
+            z-index: 10;
+            opacity: 0;
+            transform: scale(0.9);
+            transition: opacity 1.5s ease-in, transform 1.5s ease-out;
+            max-width: 90%;
+            padding: 20px;
+        }
+
+        .content.visible {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        .question {
+            font-size: clamp(1.8rem, 6vw, 3.5rem);
+            color: #d63384;
+            margin-bottom: 3rem;
+            font-weight: bold;
+            text-shadow: 0 2px 10px rgba(214, 51, 132, 0.3);
+            line-height: 1.5;
+            animation: gentlePulse 3s ease-in-out infinite;
+        }
+
+        @keyframes gentlePulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.02); }
+        }
+
+        /* Enhanced buttons */
+        .buttons {
+            position: relative;
+            min-height: 100px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 20px;
+            margin-top: 2rem;
+        }
+
+        button {
+            padding: 1.2rem 3.5rem;
+            font-size: clamp(1.2rem, 4vw, 1.8rem);
+            border: none;
+            border-radius: 60px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+            font-family: 'Georgia', serif;
+            position: relative;
+            overflow: hidden;
+        }
+
+        button::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.5);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+
+        button:active::before {
+            width: 300px;
+            height: 300px;
+        }
+
+        #noBtn {
+            background: linear-gradient(135deg, #ff6b9d 0%, #ff8fb3 100%);
+            color: white;
+            padding: 0.5rem 1.5rem;
+            font-size: clamp(0.8rem, 2vw, 1rem);
+            opacity: 1;
+            transition: all 0.3s ease;
+        }
+
+        #noBtn:hover {
+            transform: scale(1.05);
+        }
+
+        #noBtn.vanish {
+            opacity: 0;
+            transform: scale(0);
+            pointer-events: none;
+        }
+
+        #yesBtn {
+            background: linear-gradient(135deg, #28a745 0%, #34d058 100%);
+            color: white;
+            animation: rainbow 3s linear infinite;
+            background-size: 200% 200%;
+        }
+
+        @keyframes rainbow {
+            0% { filter: hue-rotate(0deg); }
+            100% { filter: hue-rotate(360deg); }
+        }
+
+        #yesBtn:hover {
+            transform: scale(1.15);
+            box-shadow: 0 12px 40px rgba(40, 167, 69, 0.5);
+        }
+
+        /* Confirmation stage */
+        #confirmNoBtn {
+            background: linear-gradient(135deg, #ff6b9d 0%, #ff8fb3 100%);
+            color: white;
+            position: fixed;
+            transition: all 0.3s ease;
+        }
+
+        #confirmNoBtn:hover {
+            transform: scale(1.1) rotate(-5deg);
+            box-shadow: 0 12px 35px rgba(255, 107, 157, 0.4);
+        }
+
+        .confirmYesBtn {
+            background: linear-gradient(135deg, #28a745 0%, #34d058 100%);
+            color: white;
+            opacity: 0;
+            transform: scale(0);
+            pointer-events: none;
+            transition: all 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            animation: rainbow 3s linear infinite;
+            background-size: 200% 200%;
+        }
+
+        .confirmYesBtn.show {
+            opacity: 1;
+            transform: scale(1);
+            pointer-events: auto;
+            animation: yesAppear 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55), rainbow 3s linear infinite;
+        }
+
+        @keyframes yesAppear {
+            0% { transform: scale(0) rotate(-180deg); }
+            100% { transform: scale(1) rotate(0deg); }
+        }
+
+        #confirmYesBtn:hover {
+            transform: scale(1.15);
+            box-shadow: 0 12px 40px rgba(40, 167, 69, 0.5);
+        }
+
+        /* Celebration screen */
+        .celebration {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #fff5f9 0%, #ffe8f3 50%, #ffd9ed 100%);
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 100;
+            opacity: 0;
+            transition: opacity 1s ease;
+            padding: 20px;
+            overflow: hidden;
+        }
+
+        .celebration.active {
+            display: flex;
+            opacity: 1;
+        }
+
+        .celebration-text {
+            font-size: clamp(1.5rem, 5vw, 3rem);
+            color: #d63384;
+            margin-bottom: 2rem;
+            font-weight: bold;
+            text-shadow: 0 3px 15px rgba(214, 51, 132, 0.4);
+            animation: celebrationPulse 1.5s ease-in-out infinite;
+            z-index: 101;
+            text-align: center;
+            line-height: 1.4;
+        }
+
+        @keyframes celebrationPulse {
+            0%, 100% { 
+                transform: scale(1) translateY(0); 
+                text-shadow: 0 3px 15px rgba(214, 51, 132, 0.4);
+            }
+            50% { 
+                transform: scale(1.08) translateY(-5px); 
+                text-shadow: 0 8px 25px rgba(214, 51, 132, 0.6);
+            }
+        }
+
+        .seal-container {
+            width: clamp(280px, 80vw, 450px);
+            height: clamp(280px, 80vw, 450px);
+            border-radius: 30px;
+            overflow: hidden;
+            box-shadow: 0 15px 60px rgba(0, 0, 0, 0.3);
+            border: 5px solid white;
+            z-index: 101;
+            animation: sealBounce 2s ease-in-out infinite;
+        }
+
+        @keyframes sealBounce {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            25% { transform: translateY(-10px) rotate(-2deg); }
+            75% { transform: translateY(-10px) rotate(2deg); }
+        }
+
+        .seal-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        /* Enhanced celebration hearts */
+        .celebration-heart {
+            position: absolute;
+            width: 40px;
+            height: 40px;
+            opacity: 0;
+            animation: celebrateFloat 4s ease-out infinite;
+            pointer-events: none;
+            filter: drop-shadow(0 0 15px rgba(255, 107, 157, 0.8));
+        }
+
+        .celebration-heart::before,
+        .celebration-heart::after {
+            content: "";
+            position: absolute;
+            width: 20px;
+            height: 32px;
+            background: linear-gradient(135deg, #ff6b9d 0%, #ffb6d9 100%);
+            border-radius: 20px 20px 0 0;
+        }
+
+        .celebration-heart::before {
+            left: 20px;
+            transform: rotate(-45deg);
+            transform-origin: 0 100%;
+        }
+
+        .celebration-heart::after {
+            left: 0;
+            transform: rotate(45deg);
+            transform-origin: 100% 100%;
+        }
+
+        @keyframes celebrateFloat {
+            0% {
+                transform: translateY(110vh) rotate(0deg) scale(0.5);
+                opacity: 0;
+            }
+            10% {
+                opacity: 1;
+            }
+            90% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-100px) rotate(720deg) scale(1.8);
+                opacity: 0;
+            }
+        }
+
+        /* Enhanced confetti */
+        .confetti {
+            position: absolute;
+            width: 12px;
+            height: 12px;
+            opacity: 0;
+            animation: confettiFall 4s ease-out infinite;
+            border-radius: 50%;
+        }
+
+        @keyframes confettiFall {
+            0% {
+                transform: translateY(-100px) rotate(0deg) scale(1);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(100vh) rotate(1080deg) scale(0.5);
+                opacity: 0;
+            }
+        }
+
+        /* Music indicator */
+        .music-indicator {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 10px 15px;
+            border-radius: 30px;
+            font-size: 0.9rem;
+            color: #d63384;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .music-indicator.show {
+            opacity: 1;
+        }
+
+        .music-wave {
+            display: flex;
+            gap: 3px;
+            height: 16px;
+            align-items: flex-end;
+        }
+
+        .music-wave span {
+            width: 3px;
+            background: #ff6b9d;
+            border-radius: 3px;
+            animation: wave 0.8s ease-in-out infinite;
+        }
+
+        .music-wave span:nth-child(1) { animation-delay: 0s; }
+        .music-wave span:nth-child(2) { animation-delay: 0.2s; }
+        .music-wave span:nth-child(3) { animation-delay: 0.4s; }
+
+        @keyframes wave {
+            0%, 100% { height: 4px; }
+            50% { height: 16px; }
+        }
+
+        /* Mobile optimizations */
+        @media (max-width: 768px) {
+            .question {
+                margin-bottom: 2rem;
+            }
+            
+            button {
+                padding: 1rem 2.5rem;
+                font-size: 1.3rem;
+            }
+
+            #noBtn {
+                padding: 0.5rem 1.2rem;
+                font-size: 0.9rem;
+            }
+            
+            .seal-container {
+                width: 85vw;
+                height: 85vw;
+                max-width: 400px;
+                max-height: 400px;
+            }
+
+            .music-indicator {
+                bottom: 10px;
+                right: 10px;
+                font-size: 0.8rem;
+                padding: 8px 12px;
+            }
+        }
+
+        @media (max-height: 700px) {
+            .celebration-text {
+                font-size: 1.3rem;
+                margin-bottom: 1rem;
+            }
+            
+            .seal-container {
+                width: 60vw;
+                height: 60vw;
+                max-width: 300px;
+                max-height: 300px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Music indicator -->
+    <div class="music-indicator" id="musicIndicator">
+        <div class="music-wave">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+        <span>Music playing ♪</span>
+    </div>
+
+    <!-- Scene 1: Opening hearts -->
+    <div class="hearts-container" id="heartsContainer"></div>
+
+    <!-- Scene 2: Main question -->
+    <div class="content" id="content">
+        <div class="question" id="questionText">
+            Yara, will you be mine forever? ❤️
+        </div>
+        <div class="buttons" id="buttonsContainer">
+            <button id="yesBtn">Yes!</button>
+            <button id="noBtn">No</button>
+        </div>
+    </div>
+
+    <!-- Scene 3: Celebration -->
+    <div class="celebration" id="celebration">
+        <div class="celebration-text">be my forever valentine 🦭❤️</div>
+        <div class="seal-container">
+            <img src="C:\Users\DELL\Downloads\aphearse-seal-dance.gif" alt="Dancing Seal" id="sealGif">
+        </div>
+    </div>
+
+    <script>
+        // ===== CHILL AMBIENT MUSIC USING WEB AUDIO API =====
+        let audioContext;
+        let musicStarted = false;
+        const musicIndicator = document.getElementById('musicIndicator');
+
+        function createChillMusic() {
+            if (!audioContext) {
+                audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            }
+
+            // Create a gentle, ambient soundscape
+            function playNote(frequency, startTime, duration, volume = 0.1) {
+                const oscillator = audioContext.createOscillator();
+                const gainNode = audioContext.createGain();
+                const filter = audioContext.createBiquadFilter();
+
+                oscillator.type = 'sine';
+                oscillator.frequency.setValueAtTime(frequency, startTime);
+                
+                filter.type = 'lowpass';
+                filter.frequency.setValueAtTime(800, startTime);
+                
+                gainNode.gain.setValueAtTime(0, startTime);
+                gainNode.gain.linearRampToValueAtTime(volume, startTime + 0.5);
+                gainNode.gain.linearRampToValueAtTime(volume * 0.7, startTime + duration - 0.5);
+                gainNode.gain.linearRampToValueAtTime(0, startTime + duration);
+
+                oscillator.connect(filter);
+                filter.connect(gainNode);
+                gainNode.connect(audioContext.destination);
+
+                oscillator.start(startTime);
+                oscillator.stop(startTime + duration);
+            }
+
+            // Romantic chord progression: C - Am - F - G (I - vi - IV - V)
+            const chords = [
+                [261.63, 329.63, 392.00], // C Major (C, E, G)
+                [220.00, 261.63, 329.63], // A Minor (A, C, E)
+                [174.61, 220.00, 261.63], // F Major (F, A, C)
+                [196.00, 246.94, 293.66]  // G Major (G, B, D)
+            ];
+
+            let currentTime = audioContext.currentTime;
+            const beatDuration = 2.5; // Slower, more romantic pace
+
+            // Loop the progression
+            function scheduleChords() {
+                for (let i = 0; i < 4; i++) {
+                    const chord = chords[i % chords.length];
+                    const startTime = currentTime + (i * beatDuration);
+                    
+                    // Play each note in the chord
+                    chord.forEach(freq => {
+                        playNote(freq, startTime, beatDuration * 1.2, 0.08);
+                        // Add a subtle higher harmony
+                        playNote(freq * 2, startTime + 0.1, beatDuration * 1.1, 0.04);
+                    });
+                }
+
+                currentTime += beatDuration * 4;
+                // Schedule next iteration
+                setTimeout(scheduleChords, beatDuration * 4 * 1000 - 1000);
+            }
+
+            scheduleChords();
+        }
+
+        function startMusic() {
+            if (!musicStarted) {
+                try {
+                    createChillMusic();
+                    musicStarted = true;
+                    musicIndicator.classList.add('show');
+                    
+                    // Hide indicator after 3 seconds
+                    setTimeout(() => {
+                        musicIndicator.classList.remove('show');
+                    }, 3000);
+                } catch (e) {
+                    console.log('Could not start music:', e);
+                }
+            }
+        }
+
+        // Start music on any user interaction
+        function initMusic() {
+            startMusic();
+            // Remove listeners after first interaction
+            document.removeEventListener('click', initMusic);
+            document.removeEventListener('touchstart', initMusic);
+            document.removeEventListener('mousedown', initMusic);
+        }
+
+        document.addEventListener('click', initMusic);
+        document.addEventListener('touchstart', initMusic);
+        document.addEventListener('mousedown', initMusic);
+
+        // ===== SCENE 1: Enhanced Opening Hearts =====
+        const heartsContainer = document.getElementById('heartsContainer');
+        const content = document.getElementById('content');
+
+        function createOpeningHearts() {
+            for (let i = 0; i < 20; i++) {
+                setTimeout(() => {
+                    const heart = document.createElement('div');
+                    heart.className = 'heart';
+                    heart.style.left = (Math.random() * 90 + 5) + '%';
+                    heart.style.animationDelay = (Math.random() * 3) + 's';
+                    heart.style.animationDuration = (4 + Math.random() * 3) + 's';
+                    
+                    heartsContainer.appendChild(heart);
+                }, i * 150);
+            }
+        }
+
+        function transitionToQuestion() {
+            setTimeout(() => {
+                heartsContainer.classList.add('fade-out');
+                setTimeout(() => {
+                    content.classList.add('visible');
+                }, 800);
+            }, 3500);
+        }
+
+        // ===== SCENE 2: Button Behavior =====
+        const questionText = document.getElementById('questionText');
+        const buttonsContainer = document.getElementById('buttonsContainer');
+        const noBtn = document.getElementById('noBtn');
+        const yesBtn = document.getElementById('yesBtn');
+        let stage = 1; // 1 = first question, 2 = confirmation
+
+        // First stage: No button vanishes on click, Yes goes to confirmation
+        noBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            noBtn.classList.add('vanish');
+        });
+
+        noBtn.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            noBtn.classList.add('vanish');
+        });
+
+        yesBtn.addEventListener('click', () => {
+            if (stage === 1) {
+                showConfirmation();
+            }
+        });
+
+        // ===== CONFIRMATION STAGE =====
+        function showConfirmation() {
+            stage = 2;
+            questionText.textContent = 'Are you sure? ❤️';
+            
+            // Clear buttons
+            buttonsContainer.innerHTML = '';
+            
+            // Create confirmation No button (runs away)
+            const confirmNoBtn = document.createElement('button');
+            confirmNoBtn.id = 'confirmNoBtn';
+            confirmNoBtn.textContent = 'No';
+            buttonsContainer.appendChild(confirmNoBtn);
+
+            // Create confirmation Yes button (hidden initially)
+            const confirmYesBtn = document.createElement('button');
+            confirmYesBtn.className = 'confirmYesBtn';
+            confirmYesBtn.textContent = 'Yes!';
+            buttonsContainer.appendChild(confirmYesBtn);
+
+            let isMoving = false;
+
+            function getRandomPosition() {
+                const buttonWidth = confirmNoBtn.offsetWidth || 150;
+                const buttonHeight = confirmNoBtn.offsetHeight || 60;
+                const currentRect = confirmNoBtn.getBoundingClientRect();
+                
+                // Move 150-250px in a random direction but stay on screen
+                const distance = 150 + Math.random() * 100;
+                const angle = Math.random() * Math.PI * 2;
+                
+                let newX = currentRect.left + Math.cos(angle) * distance;
+                let newY = currentRect.top + Math.sin(angle) * distance;
+                
+                // Keep within screen bounds with margin
+                const margin = 50;
+                newX = Math.max(margin, Math.min(newX, window.innerWidth - buttonWidth - margin));
+                newY = Math.max(margin, Math.min(newY, window.innerHeight - buttonHeight - margin));
+                
+                return { x: newX, y: newY };
+            }
+
+            function moveConfirmNoButton() {
+                if (isMoving) return;
+                isMoving = true;
+
+                const pos = getRandomPosition();
+                confirmNoBtn.style.left = pos.x + 'px';
+                confirmNoBtn.style.top = pos.y + 'px';
+
+                setTimeout(() => {
+                    isMoving = false;
+                }, 300);
+            }
+
+            // Desktop: move on hover
+            confirmNoBtn.addEventListener('mouseenter', moveConfirmNoButton);
+
+            // Mobile: move on touch
+            confirmNoBtn.addEventListener('touchstart', (e) => {
+                e.preventDefault();
+                moveConfirmNoButton();
+            });
+
+            // Backup: if somehow clicked
+            confirmNoBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                moveConfirmNoButton();
+            });
+
+            // Show Yes button after 2 seconds
+            setTimeout(() => {
+                confirmYesBtn.classList.add('show');
+            }, 2000);
+
+            // Yes button triggers celebration
+            confirmYesBtn.addEventListener('click', () => {
+                showCelebration();
+            });
+        }
+
+        // ===== SCENE 3: Enhanced Celebration =====
+        const celebration = document.getElementById('celebration');
+
+        function showCelebration() {
+            celebration.classList.add('active');
+            createEnhancedCelebration();
+            startMusic(); // Make sure music is playing
+        }
+
+        function createEnhancedCelebration() {
+            // Abundant continuous hearts
+            setInterval(() => {
+                for (let i = 0; i < 4; i++) {
+                    const heart = document.createElement('div');
+                    heart.className = 'celebration-heart';
+                    heart.style.left = (Math.random() * 100) + '%';
+                    heart.style.animationDelay = (Math.random() * 0.5) + 's';
+                    heart.style.animationDuration = (3 + Math.random() * 2) + 's';
+                    celebration.appendChild(heart);
+
+                    setTimeout(() => heart.remove(), 5000);
+                }
+            }, 300);
+
+            // Colorful confetti burst
+            const colors = ['#ffd700', '#ff69b4', '#87ceeb', '#98fb98', '#dda0dd', '#ffb347', '#ff6b9d'];
+            
+            function createConfettiBurst() {
+                for (let i = 0; i < 15; i++) {
+                    setTimeout(() => {
+                        const confetti = document.createElement('div');
+                        confetti.className = 'confetti';
+                        confetti.style.left = (Math.random() * 100) + '%';
+                        confetti.style.top = '-20px';
+                        confetti.style.animationDelay = (Math.random() * 0.3) + 's';
+                        confetti.style.animationDuration = (3 + Math.random() * 2) + 's';
+                        confetti.style.background = colors[Math.floor(Math.random() * colors.length)];
+                        
+                        celebration.appendChild(confetti);
+                        setTimeout(() => confetti.remove(), 6000);
+                    }, i * 40);
+                }
+            }
+
+            // Initial burst
+            createConfettiBurst();
+            
+            // Repeated bursts
+            setInterval(createConfettiBurst, 2000);
+        }
+
+        // ===== Initialize =====
+        window.addEventListener('load', () => {
+            createOpeningHearts();
+            transitionToQuestion();
+        });
+
+        // Prevent scrolling on mobile
+        document.body.addEventListener('touchmove', (e) => {
+            e.preventDefault();
+        }, { passive: false });
+    </script>
+</body>
+</html>
